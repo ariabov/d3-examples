@@ -1,0 +1,93 @@
+<!-- ruby -run -e httpd . -p 9090 -->
+<!DOCTYPE>
+<html>
+<head>
+  <title>d3</title>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<style type="text/css">
+  .axis path,
+  .axis line {
+      fill: none;
+      stroke: black;
+      shape-rendering: crispEdges;
+  }
+
+  .axis text {
+      font-family: sans-serif;
+      font-size: 11px;
+  }
+</style>
+<body>
+  <div style="width: 900px; display: block; margin: 0px auto;">
+    <h2>Foods to eat</h2>
+    <div id="canvas"></div>
+  </div>
+  <script type="text/javascript">
+    var width = 900,
+        height = 600;
+
+    var svg = d3.select('#canvas')
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .style("background", "#F0F0F0")
+        .style("padding", 20);
+
+    var yScale = d3.scale.linear() // Protein
+                   .domain([0, 50])
+                   .range([0, height]);
+
+    var yAxis = d3.svg.axis()
+                   .scale(yScale)
+                   .orient('left');
+
+    var xScale = d3.scale.linear() // Calorie
+                   .domain([0, 1000])
+                   .range([0, width]);
+
+    var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .ticks(4);
+
+    var data = [];
+
+    d3.csv('usda_sample.csv', function(records) {
+      data = records.map(function(d) {
+        return {
+          name: d.Description,
+          calories: d.Calories,
+          protein: d.Protein 
+        };
+      });
+      prepareGraph();
+    });
+
+    function prepareGraph() {
+      svg.selectAll('circle')
+        .data(data)
+        .enter()
+        .append('circle')
+        .attr('cx', function(d) { return xScale(d.calories) })
+        .attr('cy', function(d) { return height - yScale(d.protein) })
+        .attr('protein', function(d) { return d.protein }) // sanity check for Protein
+        .attr('calories', function(d) { return d.calories }) // sanity check for Protein
+        .attr('r', 5)
+        .attr('fill', 'blue');
+
+      svg.append("g")
+         .attr('class', 'axis')
+         .attr("transform", "translate(0," + height + ")")
+         .call(xAxis);
+
+      svg.append("g")
+         .attr('class', 'axis')
+         // .attr("transform", "translate(0," + height + ")")
+         .call(yAxis);
+    }
+    
+  </script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE>
+<html>
+<head>
+  <title>d3</title>
+  <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+<body>
+  <div style="float: left" id="canvas"></div>
+  <button style="float: left">Animate</button>
+  <script type="text/javascript">
+    var svg = d3.select('#canvas')
+        .append("svg")
+        .attr("width", 450)
+        .attr("height", 450)
+        .style("background", "#F0F0F0");
+
+    var square = svg.append('rect')
+                    .attr('x', 60)
+                    .attr('y', 60)
+                    .attr('width', 60)
+                    .attr('height', 60);
+
+    $('button').on('click', function() {
+      square.transition()
+            .attr('x', 300)
+            .duration(2000)
+            .each('end', function() {
+              d3.select(this)
+                .transition()
+                .attr('y', 200);
+            });
+    });
+  </script>
+</body>
+</html>
+
