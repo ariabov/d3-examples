@@ -3,9 +3,11 @@
 <html>
 <head>
   <title>d3</title>
+  <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
   <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
   <script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="d3.tip.js"></script>
 </head>
 <style type="text/css">
   .axis path,
@@ -57,13 +59,16 @@
     d3.csv('usda_sample.csv', function(records) {
       data = records.map(function(d) {
         return {
-          name: d.Description,
+          name: formatName(d.Description),
           calories: d.Calories,
           protein: d.Protein 
         };
       });
       prepareGraph();
     });
+
+    var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return d.name; });
+    svg.call(tip);
 
     function prepareGraph() {
       svg.selectAll('circle')
@@ -75,7 +80,9 @@
         .attr('protein', function(d) { return d.protein }) // sanity check for Protein
         .attr('calories', function(d) { return d.calories }) // sanity check for Protein
         .attr('r', 5)
-        .attr('fill', 'blue');
+        .attr('fill', 'blue')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
       svg.append("g")
          .attr('class', 'axis')
@@ -84,8 +91,11 @@
 
       svg.append("g")
          .attr('class', 'axis')
-         // .attr("transform", "translate(0," + height + ")")
          .call(yAxis);
+    }
+
+    function formatName(name) {
+      return name.replace(/,/g, ', ');
     }
     
   </script>
